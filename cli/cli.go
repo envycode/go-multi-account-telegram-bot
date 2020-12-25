@@ -19,6 +19,8 @@ func Run() {
 		ReadTimeout:  15 * time.Second,
 	}
 
+	fmt.Printf("listening application on :%v", cfg.Port)
+
 	if err := srv.ListenAndServe(); err != nil {
 		log.Fatalf("unexpected server run failed: %s", err)
 	}
