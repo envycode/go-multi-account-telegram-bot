@@ -1,5 +1,7 @@
 package main
 
-func main() {
+import "multi-account-telegram-bot/cli"
 
+func main() {
+	cli.Run()
 }
