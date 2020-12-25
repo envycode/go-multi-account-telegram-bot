@@ -4,12 +4,19 @@ import (
 	"fmt"
 	"log"
 	"multi-account-telegram-bot/config"
+	"multi-account-telegram-bot/constant"
 	"multi-account-telegram-bot/router"
 	"net/http"
+	"os"
 	"time"
 )
 
 func Run() {
+	os.RemoveAll(constant.InterpreterDir)
+	if err := os.Mkdir(constant.InterpreterDir, 0777); err != nil {
+		log.Println("can't initiate directory needed", err)
+	}
+
 	cfg := config.AppConfig()
 
 	srv := &http.Server{

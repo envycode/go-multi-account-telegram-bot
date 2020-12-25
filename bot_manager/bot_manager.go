@@ -1,8 +1,11 @@
 package bot_manager
 
 import (
+	"errors"
+	"fmt"
 	tb "gopkg.in/tucnak/telebot.v2"
 	"log"
+	"multi-account-telegram-bot/action"
 	"sync"
 	"time"
 )
@@ -10,6 +13,7 @@ import (
 type BotManager interface {
 	Spawn(bot Bot) error
 	Kill(id string) error
+	RegisterFunc(id, name string, action string) error
 }
 
 type Bot struct {
@@ -25,6 +29,36 @@ type BotPool struct {
 
 type BotManagerImpl struct {
 	ManagedBot *BotPool
+	Action     action.Action
+}
+
+func (bm BotManagerImpl) RegisterFunc(id, name string, action string) error {
+	if err := bm.Action.Create(id, name, action); err != nil {
+		return err
+	}
+	bm.ManagedBot.Lock()
+	defer bm.ManagedBot.Unlock()
+	b, ok := bm.ManagedBot.Bots[id]
+	if !ok {
+		return errors.New(fmt.Sprintf("bot not found %s", id))
+	}
+	b.Handle(fmt.Sprintf("/%s", name), func(m *tb.Message) {
+		res, err := bm.Action.Execute(id, name, m, m.Payload)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		if _, err := b.Send(m.Sender, res); err != nil {
+			log.Println(err)
+		}
+	})
+	go func() {
+		b.Stop()
+		time.Sleep(15 * time.Second)
+		b.Start()
+	}()
+
+	return nil
 }
 
 func (bm BotManagerImpl) Spawn(bot Bot) error {

@@ -3,7 +3,7 @@
 POC to prove we can register, listen and remove telegram bot on the fly.
 
 ## Setup
-require: golang 1.15
+require: golang 1.15, node (for running custom function)
 
 ```
 make dep
@@ -20,6 +20,22 @@ curl --location --request POST 'http://localhost:8080/register' \
 --data-raw '{
     "id": "your-bot-name",
     "token": "your-telegram-token'
+```
+
+### Register Custom Function
+
+there are 2 variable that you use in js script:
+- sender [js_object](username, fullname)
+- payload [string]
+
+```
+curl --location --request POST 'http://localhost:8080/register-func' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "id": "your-bot-name",
+    "name": "say_hello",
+    "action": "console.log('\''hello '\'' + sender.fullname);"
+}'
 ```
 
 ### Remove bot
