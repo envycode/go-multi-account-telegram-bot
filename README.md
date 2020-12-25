@@ -47,3 +47,13 @@ curl --location --request DELETE 'http://localhost:8080/deregister' \
     "id": "your-bot-name"
 }'
 ```
+
+## Screenshot
+
+### Register Custom Function
+
+![custom_func](./demo_custom_function_register.png)
+
+### Chat Custom Function
+
+![chat_func](./demo_chat_result.png)
